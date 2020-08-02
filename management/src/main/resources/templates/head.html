@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+		<div class="main-header" data-background-color="blue" th:fragment="common_head">
+			<!-- Logo Header -->
+			<div class="logo-header">
+				<a th:href="@{/index}" class="logo">
+					<b class="fab fa-google-drive" style="color:#FFFFFF"> 医疗废物管理</b>
+				</a>
+			</div>
+			<!-- End Logo Header -->
+
+			<!-- Navbar Header -->
+			<nav class="navbar navbar-header navbar-expand-lg">
+				<div class="container-fluid">
+                   <!--此处原为搜索框-->
+					<ul class="navbar-nav topbar-nav ml-md-auto align-items-center">
+						<li class="nav-item dropdown hidden-caret" th:if="${session.account!=null}">
+							<a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<i class="fa fa-bell"></i>
+								<span class="notification" th:if="${session.total!=0}" th:text="${session.total}"></span>
+
+							</a>
+							<ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
+								<li>
+									<div class="dropdown-title" th:text="'您收到'+${session.total}+'条消息'">您收到四条消息</div>
+								</li>
+								<li th:each="message:${session.messages}">
+									<div class="notif-scroll scrollbar-outer">
+										<div class="notif-center">
+											<a th:href="@{/message}">
+												<div class="notif-icon notif-primary"> <i class="fas fa-envelope"></i> </div>
+												<div class="notif-content">
+													<span class="block" th:text="${message.title}">
+														New user registered
+													</span>
+													<span class="time" th:text="${message.date}">5 minutes ago</span>
+												</div>
+											</a>
+										</div>
+									</div>
+								</li>
+								<li>
+									<a class="see-all" th:href="@{/message}">查看全部<i class="fa fa-angle-right"></i> </a>
+								</li>
+							</ul>
+						</li>
+						<li class="nav-item dropdown hidden-caret" th:switch="${session.account==null}">
+						    <div th:case="false">
+                                <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#" aria-expanded="false">
+                                    <div class="avatar-sm">
+                                        <img th:if="${session.account.userimage == ''}" th:src="@{/img/user.jpg}"  class="avatar-img rounded-circle">
+                                        <img th:if="${session.account.userimage != ''}" th:src="${session.account.userimage}" class="avatar-img rounded-circle">
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user animated fadeIn">
+                                    <li>
+                                        <div class="user-box">
+                                            <div class="avatar-lg">
+                                                <img th:if="${session.account.userimage == ''|| session.account.userimage == null}" th:src="@{/img/user.jpg}" alt="image profile" class="avatar-img rounded">
+                                                <img th:if="${session.account.userimage != ''}" th:src="${session.account.userimage}" alt="image profile" class="avatar-img rounded">
+                                            </div>
+                                            <div class="u-text">
+                                                <h4 th:text="${session.account.username}">Hizrian</h4>
+                                                <p class="text-muted" th:text="${session.account.useremail}">hello@example.com</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" th:href="@{/user}">个人信息</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" th:href="@{/logOut}">退出登录</a>
+                                    </li>
+                                </ul>
+                           </div>
+                           <div th:case="true">
+                                <a class="nav-link dropdown-toggle" th:href="@{/}" id="login">
+                                    <i class="fa fa-user"></i>
+                                </a>
+                           </div>
+
+						</li>
+					</ul>
+				</div>
+			</nav>
+			<!-- End Navbar -->
+			<!--   Core JS Files   -->
+            <script th:src="@{/js/core/jquery.3.2.1.min.js}"></script>
+            <script th:src="@{/js/core/popper.min.js}"></script>
+            <script th:src="@{/js/core/bootstrap.min.js}"></script>
+
+            <!-- jQuery UI -->
+            <script th:src="@{/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js}"></script>
+            <script th:src="@{/js/plugin/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js}"></script>
+
+            <!-- jQuery Scrollbar -->
+            <script th:src="@{/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js}"></script>
+
+            <script th:src="@{/js/plugin/bootstrap-notify.min.js}"></script>
+			<script th:inline="javascript">
+			var send = [[${session.account.accountid}]];
+			var socket;
+            function openSocket(send) {
+                if(typeof(WebSocket) == "undefined") {
+                    console.log("您的浏览器不支持WebSocket");
+                }else{
+                    console.log("您的浏览器支持WebSocket");
+                    //实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
+                    var socketUrl="ws://127.0.0.1:8080/webSocket/"+send;
+                    if(socket!=null){
+                        socket.close();
+                        socket=null;
+                    }
+                    socket = new WebSocket(socketUrl);
+                    //打开事件
+                    socket.onopen = function() {
+                        console.log("websocket已打开");
+                        //socket.send("这是来自客户端的消息" + location.href + new Date());
+                    };
+                    //获得消息事件
+                    socket.onmessage = function(msg) {
+                        var serverMsg = msg.data;
+                        //console.log(serverMsg);
+                        if(serverMsg == "收到一条新消息"){
+                            //alert(serverMsg);
+                            $.notify("收到一条新消息",{delay: 2000})
+                            //window.location.reload();
+                        }
+                        //发现消息进入    开始处理前端触发逻辑
+                    };
+                    //关闭事件
+                    socket.onclose = function() {
+                        console.log("websocket已关闭");
+                    };
+                    //发生了错误事件
+                    socket.onerror = function() {
+                        console.log("websocket发生了错误");
+                    }
+                }
+            }
+            openSocket(send);
+
+            /*function out() {
+                $.ajax({
+                    url:"/logOut",
+                    type:"post",
+                    success:function() {
+                        window.location.reload();
+                    }
+                })
+            }*/
+            </script>
+
+		</div>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>账户管理</title>
+	
+	<link rel="icon" th:href="@{/img/icon.ico}" type="image/x-icon"/>
+
+	<!-- Fonts and icons -->
+	<script th:src="@{/js/plugin/webfont/webfont.min.js}"></script>
+	<script th:inline="javascript">
+		WebFont.load({
+			google: {"families":["Open+Sans:300,400,600,700"]},
+			custom: {"families":["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands"], urls: ['/css/fonts.css']},
+			active: function() {
+				sessionStorage.fonts = true;
+			}
+		});
+	</script>
+	<!-- CSS Files -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/azzara.min.css}">
+
+</head>
+<body>
+	<div class="wrapper">
+		<div class="main-header" data-background-color="blue" th:replace="head::common_head">
+		</div>
+
+		<!-- Sidebar -->
+		<div class="sidebar">
+			
+			<div class="sidebar-background"></div>
+			<div class="sidebar-wrapper scrollbar-inner">
+				<div class="sidebar-content">
+					<ul class="nav">
+						<li class="nav-item">
+							<a th:href="@{/index}">
+								<i class="fas fa-home"></i>
+								<p>首页</p>
+							</a>
+						</li>
+                       <li class="nav-item">
+                           <a data-toggle="collapse" href="#waste">
+                               <i class="fas fa-layer-group"></i>
+                               <p>废物管理</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse" id="waste">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/code}">
+                                           <span class="sub-item">条码管理</span>
+                                       </a>
+                                   </li>
+                                   <li>
+                                       <a th:href="@{/operate}">
+                                           <span class="sub-item">流程操作</span>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+                       <li class="nav-item">
+                           <a data-toggle="collapse" href="#machine">
+                               <i class="fas fa-pen-square"></i>
+                               <p>机器管理</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse" id="machine">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/machine}">
+                                           <span class="sub-item">机器列表</span>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+                       <li class="nav-item">
+                           <a data-toggle="collapse" href="#count">
+                               <i class="fas fa-table"></i>
+                               <p>统计分析</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse" id="count">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/search}">
+                                           <span class="sub-item">收集统计</span>
+                                       </a>
+                                   </li>
+                                   <li>
+                                       <a th:href="@{/count}">
+                                           <span class="sub-item">收集查询</span>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+                       <li class="nav-item" th:if="${session.account.role == 'M'}">
+                           <a data-toggle="collapse" href="#person">
+                               <i class="fas fa-user-friends"></i>
+                               <p>人员管理</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse" id="person">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/person}">
+                                           <span class="sub-item">人员列表</span>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+                       <li class="nav-item active">
+                           <a data-toggle="collapse" href="#user">
+                               <i class="fas fa-desktop"></i>
+                               <p>用户管理</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse show" id="user">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/message}">
+                                           <span class="sub-item">消息通知</span>
+                                       </a>
+                                   </li>
+                                    <li class="active">
+                                        <a th:href="@{/user}">
+                                            <span class="sub-item">信息管理</span>
+                                        </a>
+                                    </li>
+                               </ul>
+                           </div>
+                       </li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- End Sidebar -->
+
+		<div class="main-panel">
+			<div class="content">
+				<div class="page-inner">
+					<!--h4-- class="page-title">账户管理</h4-->
+					<div class="row">
+						<div class="col-md-12">
+							<div class="card card-with-nav">
+								<div class="card-header">
+									<div class="row row-nav-line">
+										<ul class="nav nav-tabs nav-line nav-color-secondary" role="tablist">
+											<li class="nav-item"> <a class="nav-link active show" data-toggle="tab" href="#home" role="tab" aria-selected="true">个人信息</a> </li>
+											<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#settings" role="tab" aria-selected="false">密码修改</a> </li>
+										</ul>
+									</div>
+								</div>
+								<div class="card-body">
+                                    <div id="InfoContent" th:fragment="InfoContent">
+                                        <div class="row mt-3">
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-default">
+                                                    <label>姓名</label>
+                                                    <input type="text" class="form-control" id="name" placeholder="Name" th:value="${session.account.username}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-default">
+                                                    <label>邮箱</label>
+                                                    <input type="email" class="form-control" id="email" placeholder="Name" th:value="${session.account.useremail}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label>出生日期</label>
+                                                    <input type="date" class="form-control" id="datepicker" name="datepicker" th:value="${session.account.userbirth}" placeholder="Birth Date">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label>性别</label>
+                                                    <select class="form-control" id="gender">
+                                                        <option th:if="${session.account.usergender eq '男'}" th:selected="selected" value="男">男</option>
+                                                        <option th:if="${session.account.usergender eq '女'}" th:selected="selected" value="女">女</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label>联系电话</label>
+                                                    <input type="text" class="form-control" th:value="${session.account.userphone}" id="phone" placeholder="Phone">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-md-12">
+                                                <div class="form-group form-group-default">
+                                                    <label>办公地址</label>
+                                                    <input type="text" class="form-control" th:value="${session.account.useraddress}" id="address" placeholder="Address">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right mt-3 mb-3">
+                                            <button class="btn btn-success" th:onclick="saveChange()">保存</button>
+                                            <button class="btn btn-danger" th:onclick="saveLoad()">重置</button>
+                                        </div>
+                                   </div>
+                                   <div style="display: none">
+                                        <div class="mt-3 text-center" id="PasswordContent" th:fragment="PasswordContent">
+                                            <div class="form-group form-inline">
+                                                <label for="inlineinput" class="col-md-3 col-form-label">输入旧密码</label>
+                                                <div class="col-md-7 p-0">
+                                                    <input type="password" class="form-control input-full" id="oldPassword">
+                                                </div>
+                                            </div>
+                                            <div class="form-group form-inline">
+                                                <label for="inlineinput" class="col-md-3 col-form-label">输入新密码</label>
+                                                <div class="col-md-7 p-0">
+                                                    <input type="password" class="form-control input-full" id="newPassword">
+                                                </div>
+                                                <label for="inlineinput" class="col-md-2 col-form-label text-danger" id="old_warn"></label>
+                                            </div>
+                                            <div class="form-group form-inline">
+                                                <label for="inlineinput" class="col-md-3 col-form-label">确认新密码</label>
+                                                <div class="col-md-7 p-0">
+                                                    <input type="password" class="form-control input-full" id="confirmPassword">
+                                                </div>
+                                                <label for="inlineinput" class="col-md-2 col-form-label text-danger" id="new_warn"></label>
+                                            </div>
+                                            <div class="text-center mt-3 mb-3">
+                                                <button class="btn btn-success" onclick="submit()">提交</button>
+                                                <button class="btn btn-danger" onclick="reload()">取消</button>
+                                            </div>
+                                        </div>
+                                   </div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<!-- Layer -->
+<script th:src="@{/js/plugin/layer/layer.js}"></script>
+
+<script th:src="@{/js/user.js}"></script>
+
+</body>
+</html>

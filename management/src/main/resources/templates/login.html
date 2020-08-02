@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<title>Login</title>
+	<link rel="icon" th:href="@{/img/icon.ico}" type="image/x-icon"/>
+
+	<!-- Fonts and icons -->
+	<script th:src="@{/js/plugin/webfont/webfont.min.js}"></script>
+	<script th:inline="javascript">
+    		WebFont.load({
+    			google: {"families":["Open+Sans:300,400,600,700"]},
+    			custom: {"families":["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands"], urls: ['/css/fonts.css']},
+    			active: function() {
+    				sessionStorage.fonts = true;
+    			}
+    		});
+    </script>
+	
+	<!-- CSS Files -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/azzara.min.css}">
+</head>
+<body class="login">
+	<div class="wrapper wrapper-login">
+		<div class="container container-login animated fadeIn">
+			<h3 class="text-center">医疗废物管理系统</h3>
+			<form class="login-form" method="post" th:action="@{/loginIn}">
+				<div class="form-group form-floating-label">
+					<input id="username" name="username" type="text" class="form-control input-border-bottom" required="required">
+					<label for="username" class="placeholder">账户</label>
+				</div>
+				<div class="form-group form-floating-label">
+					<input id="password" name="password" type="password" class="form-control input-border-bottom" required="required">
+					<label for="password" class="placeholder">密码</label>
+					<div class="show-password">
+						<i class="flaticon-interface"></i>
+					</div>
+				</div>
+				<div class="row form-sub m-0">
+					<div class="custom-control custom-checkbox">
+						<input type="checkbox" class="custom-control-input" id="rememberme">
+						<label class="custom-control-label" for="rememberme">记住我</label>
+					</div>
+					
+					<!--a href="#" class="link float-right">忘记密码 ?</a-->
+				</div>
+                <div class="form-action mb-3" th:if="${msg != null}">
+                    <span class="text-center text-danger" th:text="${msg}">请先登录</span>
+                </div>
+				<div class="form-action mb-3">
+					<button class="btn btn-primary btn-rounded btn-login">登录</button>
+				</div>
+				<div class="login-account">
+					<span class="msg">忘记密码 ?</span>
+					<a href="#" class="link">联系管理员</a>
+				</div>
+			</form>
+		</div>
+
+		<!--div class="container container-signup animated fadeIn">
+			<h3 class="text-center">注册</h3>
+			<div class="login-form">
+				<div class="form-group form-floating-label">
+					<input  id="fullname" name="fullname" type="text" class="form-control input-border-bottom" required>
+					<label for="fullname" class="placeholder">全名</label>
+				</div>
+				<div class="form-group form-floating-label">
+					<input  id="email" name="email" type="email" class="form-control input-border-bottom" required>
+					<label for="email" class="placeholder">邮件</label>
+				</div>
+				<div class="form-group form-floating-label">
+					<input  id="passwordsignin" name="passwordsignin" type="password" class="form-control input-border-bottom" required>
+					<label for="passwordsignin" class="placeholder">密码</label>
+					<div class="show-password">
+						<i class="flaticon-interface"></i>
+					</div>
+				</div>
+				<div class="form-group form-floating-label">
+					<input  id="confirmpassword" name="confirmpassword" type="password" class="form-control input-border-bottom" required>
+					<label for="confirmpassword" class="placeholder">确认密码</label>
+					<div class="show-password">
+						<i class="flaticon-interface"></i>
+					</div>
+				</div>
+				<div class="row form-sub m-0">
+					<div class="custom-control custom-checkbox">
+						<input type="checkbox" class="custom-control-input" name="agree" id="agree">
+						<label class="custom-control-label" for="agree">我同意以上条款和协议.</label>
+					</div>
+				</div>
+				<div class="form-action">
+					<a href="#" id="show-signin" class="btn btn-danger btn-rounded btn-login mr-3">取消</a>
+					<a href="#" class="btn btn-primary btn-rounded btn-login">确认注册</a>
+				</div>
+			</div>
+		</div-->
+	</div>
+	<script th:src="@{/js/core/jquery.3.2.1.min.js}"></script>
+	<script th:src="@{/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js}"></script>
+	<script th:src="@{/js/core/popper.min.js}"></script>
+	<script th:src="@{/js/core/bootstrap.min.js}"></script>
+	<!--script th:src="@{/js/ready.js}"></script-->
+</body>
+</html>

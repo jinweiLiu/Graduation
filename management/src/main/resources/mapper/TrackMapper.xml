@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.edu.csu.graduation.management.persistence.TrackMapper">
+
+    <select id="getTrackById" parameterType="java.lang.String" resultType="com.edu.csu.graduation.management.entity.Track">
+        select * from track where track.id = #{id} order by date asc
+    </select>
+    
+    <select id="getWorkload" parameterType="java.lang.String" resultType="java.util.HashMap">
+        select handle,
+                sum(weigh) as workload
+        from medical.track,medical.waste
+        where track.id = waste.id
+              and track.place = '暂存地'
+        <if test='time=="day"'>
+              and TO_DAYS(track.date) = TO_DAYS(NOW())
+        </if>
+        <if test='time=="week"'>
+              and YEARWEEK(track.date,'%Y-%m-%d')=YEARWEEK(NOW())
+        </if>
+        <if test='time=="month"'>
+              and DATE_FORMAT(track.date, '%Y%m') = DATE_FORMAT(CURDATE() , '%Y%m')
+        </if>
+        group by handle
+    </select>
+    
+    <insert id="addTrack" parameterType="com.edu.csu.graduation.management.entity.Track">
+        INSERT INTO medical.track(id,place,date,handle) VALUES (#{id},#{place},#{date},#{handle})
+    </insert>
+
+</mapper>

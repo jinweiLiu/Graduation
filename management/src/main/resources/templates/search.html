@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>统计分析</title>
+	
+	<link rel="icon" th:href="@{/img/icon.ico}" type="image/x-icon"/>
+
+	<!-- Fonts and icons -->
+	<script th:src="@{/js/plugin/webfont/webfont.min.js}"></script>
+	<script th:inline="javascript">
+		WebFont.load({
+			google: {"families":["Open+Sans:300,400,600,700"]},
+			custom: {"families":["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands"], urls: ['/css/fonts.css']},
+			active: function() {
+				sessionStorage.fonts = true;
+			}
+		});
+	</script>
+	<!-- CSS Files -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/azzara.min.css}">
+
+</head>
+<body>
+	<div class="wrapper">
+		<div class="main-header" data-background-color="blue" th:replace="head::common_head">
+		</div>
+
+		<!-- Sidebar -->
+		<div class="sidebar">
+			
+			<div class="sidebar-background"></div>
+			<div class="sidebar-wrapper scrollbar-inner">
+				<div class="sidebar-content">
+					<ul class="nav">
+						<li class="nav-item">
+							<a th:href="@{/index}">
+								<i class="fas fa-home"></i>
+								<p>首页</p>
+							</a>
+						</li>
+                       <li class="nav-item">
+                           <a data-toggle="collapse" href="#waste">
+                               <i class="fas fa-layer-group"></i>
+                               <p>废物管理</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse" id="waste">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/code}">
+                                           <span class="sub-item">条码管理</span>
+                                       </a>
+                                   </li>
+                                   <li>
+                                       <a th:href="@{/operate}">
+                                           <span class="sub-item">流程操作</span>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+                       <li class="nav-item">
+                           <a data-toggle="collapse" href="#machine">
+                               <i class="fas fa-pen-square"></i>
+                               <p>机器管理</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse" id="machine">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/machine}">
+                                           <span class="sub-item">机器列表</span>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+                       <li class="nav-item active">
+                           <a data-toggle="collapse" href="#count">
+                               <i class="fas fa-table"></i>
+                               <p>统计分析</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse show" id="count">
+                               <ul class="nav nav-collapse">
+                                   <li class="active">
+                                       <a th:href="@{/search}">
+                                           <span class="sub-item">收集统计</span>
+                                       </a>
+                                   </li>
+                                   <li>
+                                       <a th:href="@{/count}">
+                                           <span class="sub-item">收集查询</span>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+                       <li class="nav-item" th:if="${session.account.role == 'M'}">
+                           <a data-toggle="collapse" href="#person">
+                               <i class="fas fa-user-friends"></i>
+                               <p>人员管理</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse" id="person">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/person}">
+                                           <span class="sub-item">人员列表</span>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+                       <li class="nav-item">
+                           <a data-toggle="collapse" href="#user">
+                               <i class="fas fa-desktop"></i>
+                               <p>用户管理</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse" id="user">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/message}">
+                                           <span class="sub-item">消息通知</span>
+                                       </a>
+                                   </li>
+                                    <li>
+                                        <a th:href="@{/user}">
+                                            <span class="sub-item">信息管理</span>
+                                        </a>
+                                    </li>
+                               </ul>
+                           </div>
+                       </li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- End Sidebar -->
+
+		<div class="main-panel">
+			<div class="content">
+				<div class="page-inner">
+					<div class="row">
+                        <div class="col-md-12">
+							<div class="card">
+								<div class="card-body row" >
+                                   <div class="col-md-6">
+                                       <div class="card" style="height: 475px">
+                                           <div class="card-header">
+                                               <ul class="nav nav-pills nav-secondary nav-pills-no-bd" id="pills-tab-without-border" role="tablist">
+                                                   <li class="nav-item">
+                                                       <a class="nav-link active" id="pills-home-tab-nobd" data-toggle="pill" role="tab" aria-controls="pills-home-nobd" aria-selected="true" onclick="display('day')">今日</a>
+                                                   </li>
+                                                   <li class="nav-item">
+                                                       <a class="nav-link" id="pills-profile-tab-nobd" data-toggle="pill" role="tab" aria-controls="pills-profile-nobd" aria-selected="false" onclick="display('week')">本周</a>
+                                                   </li>
+                                                   <li class="nav-item">
+                                                       <a class="nav-link" id="pills-contact-tab-nobd" data-toggle="pill" role="tab" aria-controls="pills-contact-nobd" aria-selected="false" onclick="display('month')">本月</a>
+                                                   </li>
+                                               </ul>
+                                           </div>
+                                           <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="card card-stats card-round">
+                                                            <div class="card-body ">
+                                                                <div class="row">
+                                                                    <div class="col-5">
+                                                                        <div class="icon-big text-center">
+                                                                            <i class="flaticon-chart-pie text-warning"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col col-stats">
+                                                                        <div class="numbers">
+                                                                            <p class="card-category">总量</p>
+                                                                            <h4 class="card-title" id="text-total">0 kg</h4>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="card card-stats card-round">
+                                                            <div class="card-body ">
+                                                                <div class="row">
+                                                                    <div class="col-5">
+                                                                        <div class="icon-big text-center">
+                                                                            <i class="flaticon-share-1 text-success"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col col-stats">
+                                                                        <div class="numbers">
+                                                                            <p class="card-category">损伤性废物</p>
+                                                                            <h4 class="card-title" id="text-first">0 kg</h4>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="card card-stats card-round">
+                                                            <div class="card-body ">
+                                                                <div class="row">
+                                                                    <div class="col-5">
+                                                                        <div class="icon-big text-center">
+                                                                            <i class="flaticon-box text-danger"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col col-stats">
+                                                                        <div class="numbers">
+                                                                            <p class="card-category">感染性废物</p>
+                                                                            <h4 class="card-title" id="text-second">0 kg</h4>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="card card-stats card-round">
+                                                            <div class="card-body ">
+                                                                <div class="row">
+                                                                    <div class="col-5">
+                                                                        <div class="icon-big text-center">
+                                                                            <i class="flaticon-interface-5 text-primary"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col col-stats">
+                                                                        <div class="numbers">
+                                                                            <p class="card-category">输液塑料瓶</p>
+                                                                            <h4 class="card-title" id="text-third">0 kg</h4>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="card card-stats card-round">
+                                                            <div class="card-body ">
+                                                                <div class="row">
+                                                                    <div class="col-5">
+                                                                        <div class="icon-big text-center">
+                                                                            <i class="flaticon-graph text-secondary"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col col-stats">
+                                                                        <div class="numbers">
+                                                                            <p class="card-category">入库量</p>
+                                                                            <h4 class="card-title" id="text-in">0 kg</h4>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="card card-stats card-round">
+                                                            <div class="card-body ">
+                                                                <div class="row">
+                                                                    <div class="col-5">
+                                                                        <div class="icon-big text-center">
+                                                                            <i class="flaticon-graph-1 text-null"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col col-stats">
+                                                                        <div class="numbers">
+                                                                            <p class="card-category">出库量</p>
+                                                                            <h4 class="card-title" id="text-out">0 kg</h4>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                           </div>
+                                       </div>
+                                   </div>
+                                    <div class="col-md-6">
+                                        <div class="card" style="height: 475px">
+                                            <div class="card-header">
+                                                <div class="card-title">本月工作量占比</div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-container">
+                                                    <canvas id="pieChart" ></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <div class="row">
+                                                    <div class="card-title col-md-9">各科室三类废物收集量直方图</div>
+                                                    <div class="input-group col-md-3">
+                                                        <label class="col-form-label">时间:&nbsp;</label>
+                                                        <select class="form-control" id="select-time">
+                                                            <option value="day" selected="selected">今日</option>
+                                                            <option value="week">本周</option>
+                                                            <option value="month">本月</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-container">
+                                                    <canvas id="multipleBarChart"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<!-- Chart JS -->
+<script th:src="@{/js/plugin/chart.js/chart.min.js}"></script>
+
+<!-- Datatables -->
+<script th:src="@{/js/plugin/datatables/datatables.min.js}"></script>
+
+<script th:src="@{/js/search.js}"></script>
+
+</body>
+</html>

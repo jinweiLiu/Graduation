@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.edu.csu.graduation.management.persistence.AccountMapper">
+
+    <select id="getAccountByAccount" parameterType="java.lang.String" resultType="com.edu.csu.graduation.management.entity.Account">
+      SELECT
+            account.accountid,
+            account.password,
+            account.role,
+            profile.username,
+            profile.userimage,
+            profile.useremail,
+            profile.userbirth,
+            profile.userphone,
+            profile.useraddress,
+            profile.usergender
+      FROM medical.account,medical.profile
+      WHERE account.accountid = #{accountid}
+      AND account.password = #{password}
+      AND account.accountid = profile.accountid
+    </select>
+
+    <update id="updatePassword" parameterType="java.lang.String">
+        UPDATE medical.account SET account.password = #{password} WHERE account.accountid = #{accountid}
+    </update>
+    
+    <select id="getColleagues" parameterType="java.lang.String" resultType="com.edu.csu.graduation.management.entity.Account">
+        SELECT
+            account.accountid,
+            account.password,
+            profile.username,
+            profile.userimage,
+            profile.useremail,
+            profile.userbirth,
+            profile.userphone,
+            profile.useraddress,
+            profile.usergender
+        FROM medical.account,medical.profile
+        WHERE account.accountid != #{accountid}
+        AND account.accountid = profile.accountid
+    </select>
+
+    <update id="updateAccount">
+        UPDATE profile SET profile.username = #{username},
+                            profile.usergender = #{usergender},
+                            profile.useraddress = #{useraddress},
+                            profile.userphone = #{userphone},
+                            profile.userbirth = #{userbirth},
+                            profile.useremail = #{useremail}
+                         WHERE profile.accountid = #{accountid}
+    </update>
+
+    <select id="getUsername" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT profile.username FROM profile WHERE profile.accountid = #{accountid}
+    </select>
+
+    <select id="getPerson" parameterType="java.lang.Integer" resultType="com.edu.csu.graduation.management.entity.Person">
+        SELECT account.accountid,
+                profile.username,
+                profile.usergender,
+                account.role
+        FROM medical.account,medical.profile
+        WHERE account.accountid = profile.accountid
+        AND account.role = 'C'
+        LIMIT #{start},#{end}
+    </select>
+
+    <select id="getPersonCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM medical.account,medical.profile
+        WHERE account.accountid = profile.accountid
+        AND account.role = 'C'
+    </select>
+    
+    <update id="updateRole" parameterType="java.lang.String">
+        UPDATE medical.account SET account.role = 'M' WHERE accountid = #{accountid}
+    </update>
+    
+    <delete id="deletePersonAccount" parameterType="java.lang.String">
+        DELETE FROM medical.account WHERE accountid = #{accountid}
+    </delete>
+
+    <delete id="deletePersonProfile" parameterType="java.lang.String">
+        DELETE FROM medical.profile WHERE accountid = #{accountid}
+    </delete>
+    
+    <insert id="addAccount" parameterType="com.edu.csu.graduation.management.entity.Account">
+        INSERT INTO medical.account(accountid, password, role) VALUES (#{accountid},#{password},#{role})
+    </insert>
+
+    <insert id="addProfile" parameterType="com.edu.csu.graduation.management.entity.Account">
+        INSERT INTO medical.profile(accountid, username, usergender) VALUES (#{accountid},#{username},#{usergender})
+    </insert>
+</mapper>

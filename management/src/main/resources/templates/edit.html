@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/azzara.min.css}">
+</head>
+<body>
+	<div class="wrapper">
+        <div class="col-md-12">
+            <div class="card card-with-nav">
+                <div class="card-body">
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="form-group form-group-default">
+                                <label>题目</label>
+                                <input id="input_title" type="text" class="form-control" placeholder="在此输入标题">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mb-1">
+                        <div class="col-md-12">
+                            <div class="form-group form-group-default">
+                                <label>内容</label>
+                                <textarea id="input_text" class="form-control" placeholder="在此输入要发送的内容" rows="9"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+</body>
+</html>

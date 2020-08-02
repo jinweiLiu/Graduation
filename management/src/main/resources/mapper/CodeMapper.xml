@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.edu.csu.graduation.management.persistence.CodeMapper">
+
+    <select id="getAllCode" parameterType="java.lang.Integer" resultType="com.edu.csu.graduation.management.entity.Code">
+        select * from code LIMIT #{start},#{end}
+    </select>
+    
+    <insert id="createCode" parameterType="com.edu.csu.graduation.management.entity.Code">
+        INSERT INTO code(id,source,machine,person) VALUES (#{id},#{source},#{machine},#{person})
+    </insert>
+    
+    <select id="getCodeCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM code
+    </select>
+    
+    <delete id="deleteCode" parameterType="java.lang.String">
+        DELETE FROM code WHERE code.id = #{id}
+    </delete>
+
+</mapper>

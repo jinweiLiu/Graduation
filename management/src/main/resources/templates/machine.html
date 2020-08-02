@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>收集机管理</title>
+	
+	<link rel="icon" th:href="@{/img/icon.ico}" type="image/x-icon"/>
+
+	<!-- Fonts and icons -->
+	<script th:src="@{/js/plugin/webfont/webfont.min.js}"></script>
+	<script th:inline="javascript">
+		WebFont.load({
+			google: {"families":["Open+Sans:300,400,600,700"]},
+			custom: {"families":["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands"], urls: ['/css/fonts.css']},
+			active: function() {
+				sessionStorage.fonts = true;
+			}
+		});
+	</script>
+	<!-- CSS Files -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/azzara.min.css}">
+
+	<!-- CSS Just for demo purpose, don't include it in your project -->
+	<link rel="stylesheet" th:href="@{/css/demo.css}">
+</head>
+<body>
+	<div class="wrapper">
+		<!--
+			Tip 1: You can change the background color of the main header using: data-background-color="blue | purple | light-blue | green | orange | red"
+		-->
+		<div class="main-header" data-background-color="blue" th:replace="head::common_head">
+		</div>
+
+		<!-- Sidebar -->
+		<div class="sidebar">
+			
+			<div class="sidebar-background"></div>
+			<div class="sidebar-wrapper scrollbar-inner">
+				<div class="sidebar-content">
+					<ul class="nav">
+						<li class="nav-item">
+							<a th:href="@{/index}">
+								<i class="fas fa-home"></i>
+								<p>首页</p>
+							</a>
+						</li>
+                       <li class="nav-item">
+                           <a data-toggle="collapse" href="#waste">
+                               <i class="fas fa-layer-group"></i>
+                               <p>废物管理</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse" id="waste">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/code}">
+                                           <span class="sub-item">条码管理</span>
+                                       </a>
+                                   </li>
+                                   <li>
+                                       <a th:href="@{/operate}">
+                                           <span class="sub-item">流程操作</span>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+                       <li class="nav-item active">
+                           <a data-toggle="collapse" href="#machine">
+                               <i class="fas fa-pen-square"></i>
+                               <p>机器管理</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse show" id="machine">
+                               <ul class="nav nav-collapse">
+                                   <li class="active">
+                                       <a th:href="@{/machine}">
+                                           <span class="sub-item">机器列表</span>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+                       <li class="nav-item">
+                           <a data-toggle="collapse" href="#count">
+                               <i class="fas fa-table"></i>
+                               <p>统计分析</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse" id="count">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/search}">
+                                           <span class="sub-item">收集统计</span>
+                                       </a>
+                                   </li>
+                                   <li>
+                                       <a th:href="@{/count}">
+                                           <span class="sub-item">收集查询</span>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+                       <li class="nav-item" th:if="${session.account.role == 'M'}">
+                           <a data-toggle="collapse" href="#person">
+                               <i class="fas fa-user-friends"></i>
+                               <p>人员管理</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse" id="person">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/person}">
+                                           <span class="sub-item">人员列表</span>
+                                       </a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+                       <li class="nav-item">
+                           <a data-toggle="collapse" href="#user">
+                               <i class="fas fa-desktop"></i>
+                               <p>用户管理</p>
+                               <span class="caret"></span>
+                           </a>
+                           <div class="collapse" id="user">
+                               <ul class="nav nav-collapse">
+                                   <li>
+                                       <a th:href="@{/message}">
+                                           <span class="sub-item">消息通知</span>
+                                       </a>
+                                   </li>
+                                    <li>
+                                        <a th:href="@{/user}">
+                                            <span class="sub-item">信息管理</span>
+                                        </a>
+                                    </li>
+                               </ul>
+                           </div>
+                       </li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- End Sidebar -->
+
+		<div class="main-panel">
+			<div class="content">
+				<div class="page-inner">
+					<div class="row">
+                        <div class="col-sm-6 col-md-3">
+                            <div class="card card-stats card-round" onmouseover="this.style.backgroundColor='#F4F9FD'" onmouseout="this.style.backgroundColor='#FFFFFF'">
+                                <div class="card-body ">
+                                    <div class="row align-items-center" onclick="change('')">
+                                        <div class="col-icon">
+                                            <div class="icon-big text-center icon-primary bubble-shadow-small">
+                                                <i class="fas fa-tv"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col col-stats ml-3 ml-sm-0">
+                                            <div class="numbers">
+                                                <p class="card-category">收集机</p>
+                                                <h4 class="card-title" th:text="${total}">20</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="card card-stats card-round">
+                                <div class="card-body card-color" onmouseover="this.style.backgroundColor='#F4F9FD'" onmouseout="this.style.backgroundColor='#FFFFFF'">
+                                    <div class="row align-items-center" onclick="change('运行中')">
+                                        <div class="col-icon">
+                                            <div class="icon-big text-center icon-success bubble-shadow-small">
+                                                <i class="far fa-check-circle"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col col-stats ml-3 ml-sm-0">
+                                            <div class="numbers">
+                                                <p class="card-category">运行中</p>
+                                                <h4 class="card-title" th:text="${running}">15</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+						<div class="col-sm-6 col-md-3">
+							<div class="card card-stats card-round" onmouseover="this.style.backgroundColor='#F4F9FD'" onmouseout="this.style.backgroundColor='#FFFFFF'">
+								<div class="card-body">
+									<div class="row align-items-center"  onclick="change('待机中')">
+										<div class="col-icon">
+											<div class="icon-big text-center icon-info bubble-shadow-small">
+												<i class="far fa-clock"></i>
+											</div>
+										</div>
+										<div class="col col-stats ml-3 ml-sm-0">
+											<div class="numbers">
+												<p class="card-category">待机中</p>
+												<h4 class="card-title" th:text="${waiting}">3</h4>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-sm-6 col-md-3">
+							<div class="card card-stats card-round" onmouseover="this.style.backgroundColor='#F4F9FD'" onmouseout="this.style.backgroundColor='#FFFFFF'">
+								<div class="card-body">
+									<div class="row align-items-center" onclick="change('故障中')">
+										<div class="col-icon">
+											<div class="icon-big text-center icon-warning bubble-shadow-small">
+												<i class="fas fa-exclamation"></i>
+											</div>
+										</div>
+										<div class="col col-stats ml-3 ml-sm-0">
+											<div class="numbers">
+												<p class="card-category">故障中</p>
+												<h4 class="card-title" th:text="${breaking}">2</h4>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="card">
+								<div class="card-header">
+									<div class="d-flex align-items-center">
+										<h4 class="card-title">设备列表</h4>
+										<button class="btn btn-primary btn-round ml-auto" data-toggle="modal" data-target="#addRowModal">
+											<i class="fa fa-plus"></i>
+											添加设备
+										</button>
+									</div>
+								</div>
+								<div class="card-body">
+									<div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
+										<div class="modal-dialog" role="document">
+											<div class="modal-content">
+												<div class="modal-header no-bd">
+													<h4 class="modal-title">
+														<span class="fw-mediumbold">
+														新设备信息
+														</span>
+													</h4>
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<div class="modal-body">
+													<!--p class="small">Create a new row using this form, make sure you fill them all</p-->
+													<form>
+														<div class="row">
+															<div class="col-sm-12">
+																<div class="form-group form-group-default">
+																	<label>设备编号</label>
+																	<input id="addName" type="text" class="form-control" placeholder="请输入编号">
+																</div>
+															</div>
+															<div class="col-sm-12">
+																<div class="form-group form-group-default">
+																	<label>设备位置</label>
+																	<input id="addPlace" type="text" class="form-control" placeholder="如门诊楼203">
+																</div>
+															</div>
+															<div class="col-sm-12">
+																<div class="form-group form-group-default">
+																	<label>交付日期</label>
+																	<input id="addDate" type="date" class="form-control" >
+																</div>
+															</div>
+														</div>
+													</form>
+												</div>
+												<div class="modal-footer no-bd">
+													<button type="button" id="addRowButton" class="btn btn-primary">添加</button>
+													<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+												</div>
+											</div>
+										</div>
+									</div>
+                                   <div class="table-responsive">
+                                        <table id="machine-table" class="display table table-striped table-hover" >
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                   </div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<!-- Datatables -->
+<script th:src="@{/js/plugin/datatables/datatables.min.js}"></script>
+
+<!-- Sweet Alert -->
+<script th:src="@{/js/plugin/sweetalert/sweetalert.min.js}"></script>
+
+<!-- Layer -->
+<script th:src="@{/js/plugin/layer/layer.js}"></script>
+
+<script th:src="@{/js/machine.js}"></script>
+
+</body>
+</html>

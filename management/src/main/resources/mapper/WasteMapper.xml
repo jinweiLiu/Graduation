@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.edu.csu.graduation.management.persistence.WasteMapper">
+    
+    <resultMap id="wasteMap" type="com.edu.csu.graduation.management.entity.Waste">
+        <result property="id" column="id"></result>
+        <result property="weigh" column="weigh"></result>
+        <result property="date" column="formatdate"></result>
+        <result property="variety" column="variety"></result>
+        <result property="source" column="source"></result>
+        <result property="state" column="state"></result>
+    </resultMap>
+
+    <select id="getWasteListByState" parameterType="map" resultMap="wasteMap">
+        SELECT
+            waste.id,
+            waste.weigh,
+            date_format(waste.date, '%Y-%m-%d %H:%i:%s') as formatdate,
+            waste.variety,
+            waste.source,
+            waste.state
+        FROM medical.waste
+        WHERE waste.state = #{state}
+        ORDER BY formatdate DESC
+        LIMIT #{start}, #{end}
+    </select>
+
+    <select id="getReadyList" parameterType="java.lang.Integer" resultMap="wasteMap">
+        SELECT
+            waste.id,
+            waste.weigh,
+            date_format(waste.date, '%Y-%m-%d %H:%i:%s') as formatdate,
+            waste.variety,
+            waste.source,
+            waste.state
+        FROM medical.waste
+        WHERE waste.id in (select track.id from medical.track GROUP BY track.id having count(1) = #{count})
+        ORDER BY formatdate DESC
+        LIMIT #{start}, #{end}
+    </select>
+
+    <select id="getReadyListCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(1) from medical.waste WHERE waste.id in (select track.id from medical.track GROUP BY track.id having count(1) = #{count})
+    </select>
+
+    <select id="getWasteListByKeyword" parameterType="map" resultMap="wasteMap">
+        SELECT
+            waste.id,
+            waste.weigh,
+            date_format(waste.date, '%Y-%m-%d %H:%i:%s') as formatdate,
+            waste.variety,
+            waste.source,
+            waste.state
+        FROM medical.waste
+        WHERE waste.state = #{state}
+        AND (waste.source LIKE #{keyword} OR waste.variety LIKE #{keyword} OR waste.id like #{keyword})
+        ORDER BY formatdate DESC
+        LIMIT #{start}, #{end}
+    </select>
+
+    <select id="getCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from medical.waste where waste.state = #{state}
+    </select>
+
+    <select id="getFilteredCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from medical.waste
+        where waste.state = 'I' AND (waste.source LIKE #{keyword} OR waste.variety LIKE #{keyword} OR waste.id like #{keyword})
+    </select>
+    
+    <select id="getRecentlyTotal" parameterType="java.lang.String" resultType="java.util.HashMap">
+        SELECT
+        SUM( waste.weigh ) AS total,
+        DATE_FORMAT( waste.date, '%Y-%m-%d' ) AS formatdate
+        FROM
+        medical.waste
+        WHERE
+        <![CDATA[ DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= date(waste.date) ]]>
+        <if test='state!=null and state!="" '>
+            and waste.state = #{state}
+        </if>
+        GROUP BY
+        DATE_FORMAT( waste.date, '%Y-%m-%d' )
+        ORDER BY
+        formatdate ASC;
+    </select>
+    
+    <!--select id="getWasteList" parameterType="map" resultMap="wasteMap">
+        SELECT
+        waste.id,
+        waste.weigh,
+        date_format(waste.date, '%Y-%m-%d %H:%i:%s') as formatdate,
+        waste.variety,
+        waste.source,
+        waste.state
+        FROM medical.waste
+        ORDER BY formatdate DESC
+        LIMIT #{start}, #{end}
+    </select-->
+
+    <select id="getMulFiltered" parameterType="map" resultMap="wasteMap">
+        SELECT
+        waste.id,
+        waste.weigh,
+        date_format(waste.date, '%Y-%m-%d %H:%i:%s') as formatdate,
+        waste.variety,
+        waste.source,
+        waste.state
+        FROM medical.waste
+        <where>
+            <if test='variety!="" and variety!=null'>
+                waste.variety = #{variety}
+            </if>
+            <if test='source!="" and source!=null'>
+                and waste.source = #{source}
+            </if>
+            <if test='startTime!="" and startTime!=null '>
+                and date_format(waste.date, '%Y-%m-%d') &gt;=  #{startTime}
+            </if>
+            <if test='endTime!="" and startTime!=null '>
+                and date_format(waste.date, '%Y-%m-%d') &lt;=  #{endTime}
+            </if>
+        </where>
+        ORDER BY formatdate DESC
+        LIMIT #{start}, #{end}
+    </select>
+
+    <select id="getMulFilteredCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM medical.waste
+        <where>
+            <if test='variety!="" and variety!=null'>
+                waste.variety = #{variety}
+            </if>
+            <if test='source!="" and source!=null'>
+                and waste.source = #{source}
+            </if>
+            <if test='startTime!="" and startTime!=null '>
+                and date_format(waste.date, '%Y-%m-%d') &gt;=  #{startTime}
+            </if>
+            <if test='endTime!="" and startTime!=null '>
+                and date_format(waste.date, '%Y-%m-%d') &lt;=  #{endTime}
+            </if>
+        </where>
+    </select>
+    
+    <select id="getToday" parameterType="java.lang.String" resultType="java.lang.Double">
+        SELECT sum(weigh) as total
+        FROM medical.waste
+        <where>
+            <if test='state!="" and state!=null'>
+                and waste.state = #{state}
+            </if>
+            <if test='variety!=null and variety!=""'>
+                and waste.variety = #{variety}
+            </if>
+            <if test='time=="day"'>
+                and TO_DAYS(waste.date) = TO_DAYS(NOW())
+            </if>
+            <if test='time=="week"'>
+                and YEARWEEK(waste.date,'%Y-%m-%d')=YEARWEEK(NOW())
+            </if>
+            <if test='time=="month"'>
+                and DATE_FORMAT(waste.date, '%Y%m') = DATE_FORMAT(CURDATE() , '%Y%m')
+            </if>
+        </where>
+    </select>
+    
+    <select id="getSourceData" parameterType="java.lang.String" resultType="java.util.HashMap">
+        SELECT source, sum(weigh) as value
+        FROM medical.waste
+        WHERE waste.variety = #{variety}
+        <if test='time=="day"'>
+            and TO_DAYS(waste.date) = TO_DAYS(NOW())
+        </if>
+        <if test='time=="week"'>
+            and YEARWEEK(waste.date,'%Y-%m-%d')=YEARWEEK(NOW())
+        </if>
+        <if test='time=="month"'>
+            and DATE_FORMAT(waste.date, '%Y%m') = DATE_FORMAT(CURDATE() , '%Y%m')
+        </if>
+        GROUP BY source
+    </select>
+    
+    <select id="getThreeTotal" resultType="java.util.HashMap">
+        SELECT waste.variety,
+               SUM(waste.weigh) as total
+        FROM medical.waste
+        WHERE
+        <![CDATA[ DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= date(waste.date) ]]>
+        GROUP BY waste.variety
+    </select>
+    
+    <update id="updateState" parameterType="java.lang.String">
+        UPDATE medical.waste SET waste.state = 'O' WHERE waste.id = #{id}
+    </update>
+
+</mapper>
